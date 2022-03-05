@@ -44,24 +44,39 @@ def download_stock_history(stock):
 
 def download_stock_info(stock):
 
-    #df_info = pd.DataFrame(columns=['isin', 'cashflow', 'actions','dividends'])
-    tab_info ={}
+
     tickers = yf.Tickers(stock)
     current_stock = tickers.tickers[stock]
 
-
-    tab_info['isin'] = current_stock.get_isin()
-    tab_info['financials'] = current_stock.financials
-
     output_name = 'stocks/' + stock + '/info_' + stock + '.csv'
-    #tab_info.to_csv(output_name)
 
-   # df_info.to_csv(output_name)
+    df = pd.DataFrame({'info:' : [current_stock.info]})
+    df.to_csv(output_name, header=True)
 
-    with open(output_name, 'w') as f:
-        for key in tab_info.keys():
 
-            f.write("%s,%s\n"%(key,tab_info[key]))
+    with open(output_name,'a+', newline='') as writer:
+        writer.write("---CashFlow---\n")
+
+    df = pd.DataFrame(current_stock.cashflow)
+    df.to_csv(output_name, mode='a', header=True)
+
+
+    with open(output_name,'a+', newline='') as writer:
+        writer.write("---Financials---\n")
+
+    df_financials = pd.DataFrame(current_stock.financials)
+    df_financials.to_csv(output_name, mode='a', header=True,)
+
+    #balancesheet, recommendations, earnings, actions, options, shares
+    #
+
+    ##
+    # todo remove save
+    # todo compute Fundamentals according to Ebook
+    # todo do analysis and confirmation on stocks history
+    ##
+
+
 
 
 if __name__ == '__main__':
